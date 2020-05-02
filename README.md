@@ -1,6 +1,6 @@
 ### devlopr-jekyll - A Beautiful Jekyll Theme Built for Developers
 
-[![Gem Version](https://badge.fury.io/rb/devlopr.svg)](https://badge.fury.io/rb/devlopr)![workflow-badge](https://github.com/sujaykundu777/devlopr-jekyll/workflows/deploy/badge.svg)
+[![Gem Version](https://badge.fury.io/rb/devlopr.svg)](https://badge.fury.io/rb/devlopr)![workflow-badge](https://github.com/gkravi/gkravi.github.io/workflows/deploy/badge.svg)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/4232ac2b-63e0-4c78-92e0-e95aad5ab8c3/deploy-status)](https://app.netlify.com/sites/devlopr/deploys)
 ![](https://ruby-gem-downloads-badge.herokuapp.com/devlopr?type=total&color=brightgreen&style=plastic)
 
@@ -9,27 +9,23 @@ The Theme supports both Light and Dark Style. Highly Customizable and No Hosting
 
 #### [Installation Guide](https://devlopr.netlify.app/get-started)
 
-![devlopr jekyll](https://github.com/sujaykundu777/devlopr-jekyll/blob/master/assets/img/screenshot.PNG?raw=true)
+![devlopr jekyll](https://github.com/gkravi/gkravi.github.io/blob/master/assets/img/screenshot.PNG?raw=true)
 
 devlopr uses Markdown Files to create data like Blog Posts, Gallery, Shop Products etc. No external database is required.
 
 You can easily manage the site using the admin : [http://localhost:4000/admin](http://localhost:4000/admin)
 
-![jekyll admin](https://github.com/sujaykundu777/devlopr-jekyll/blob/master/assets/img/jekyll-admin.PNG?raw=true)
+![jekyll admin](https://github.com/gkravi/gkravi.github.io/blob/master/assets/img/jekyll-admin.PNG?raw=true)
 
 ### Deploy your devlopr-jekyll blog - One Click Deploy
 
-[![Deploy with ZEIT Now](https://zeit.co/button)](https://zeit.co/new/project?template=https://github.com/sujaykundu777/devlopr-jekyll)
-[![Deploy with Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/sujaykundu777/devlopr-jekyll)
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/sujaykundu777/devlopr-jekyll)
+[![Deploy with ZEIT Now](https://zeit.co/button)](https://zeit.co/new/project?template=https://github.com/gkravi/gkravi.github.io)
+[![Deploy with Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/gkravi/gkravi.github.io)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/gkravi/gkravi.github.io)
 
 ### Demo (Hosted Apps)
 
-- Github Pages Demo - [here](https://sujaykundu.com)
-- Netlify Demo - [here](https://devlopr.netlify.com)
-- Zeit Now Demo - [here](https://devlopr-jekyll.now.sh)
-- Heroku Demo - [here](https://devlopr-jekyll.herokuapp.com)
-- AWS Amplify Demo - [here](https://master.d3t30wwddt6jju.amplifyapp.com/)
+- Github Pages Demo - [here](https://gkravi.github.io)
 
 #### Features :
 
@@ -87,23 +83,17 @@ Once everything is good and ready to go live -
 
 Contributions are more than just welcome. Fork this repo and create a new branch, then submit a pull request
 
-- 1.Fork it [http://github.com/sujaykundu777/devlopr-jekyll/fork](http://github.com/sujaykundu777/devlopr-jekyll/fork )
+- 1.Fork it [http://github.com/gkravi/gkravi.github.io/fork](http://github.com/gkravi/gkravi.github.io/fork)
 
 - 2.Create your feature branch
-`git checkout -b my-new-feature`
+  `git checkout -b my-new-feature`
 
 - 3.Commit your changes
-`git commit -am 'Add some feature'`
+  `git commit -am 'Add some feature'`
 
 - 4.Push to the branch
-`git push origin my-new-feature`
+  `git push origin my-new-feature`
 
 - 5.Create new Pull Request
 
 ### If you like the project. Don't forget to :star: !
-
-## Licence
-
-The theme is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT). You can do anything you want, including projects for your clients, as long as you mention an attribution back (credit links in footer).
-
-I understand that sometimes footer links or any links to external websites are not convenient, so you have the option to remove credits by donating here.[here](https://buymeacoff.ee/sujaykundu).

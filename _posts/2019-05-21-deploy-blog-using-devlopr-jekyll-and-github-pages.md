@@ -1,11 +1,11 @@
 ---
 layout: post
 title: How to deploy devlopr-jekyll Blog using Github Pages and Travis
-author: Sujay Kundu
-date: '2019-05-21 14:35:23 +0530'
+author: Ravi Gupta
+date: "2019-05-21 14:35:23 +0530"
 category:
-        - guides
-        - tutorials
+  - guides
+  - tutorials
 summary: Deployment Guide for devlopr-jekyll blog using Github Pages and Travis CI
 thumbnail: deploy-using-github-pages-and-travis.png
 ---
@@ -70,7 +70,6 @@ Go to [Github Generate a New Token](https://github.com/settings/tokens) Page.
 Create a new Access Token
 
 ![deploy using travis](/assets/img/posts/d2.png){:class="img-fluid"}
-
 
 ##### Configure Travis
 
