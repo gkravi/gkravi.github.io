@@ -169,4 +169,4 @@ Visit your Github Repo settings ! Enable master branch as Github Pages Branch :
 
 > Congrats ! On your new shining Blog !
 
-You can visit the blog using [http://your-github-username.github.io](http://your-github-username.github.io).
+You can visit the blog using [http://gkravi.github.io](http://gkravi.github.io).
