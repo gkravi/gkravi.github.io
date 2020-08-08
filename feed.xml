@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2020-08-08T03:28:24+00:00</updated><id>/feed.xml</id><title type="html">The Code Place</title><subtitle>devlopr- is a Code Place For Developers</subtitle><author><name>Ravi Gupta</name></author><entry><title type="html">AEM Dispatcher Setup</title><link href="/aem/2020/05/03/aem-dispatcher-setup/" rel="alternate" type="text/html" title="AEM Dispatcher Setup" /><published>2020-05-03T09:31:02+00:00</published><updated>2020-05-03T09:31:02+00:00</updated><id>/aem/2020/05/03/aem-dispatcher-setup</id><content type="html" xml:base="/aem/2020/05/03/aem-dispatcher-setup/">&lt;h1 id=&quot;aem-dispatcher-installation&quot;&gt;AEM Dispatcher installation:&lt;/h1&gt;
+
+&lt;p&gt;&lt;strong&gt;Step:1 Open the url https://www.adobeaemcloud.com/content/companies/public/adobe/dispatcher/dispatcher.html&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;And download AEM dispatcher dispatcher-apache2.2-windows-x86-4.2.3.zip then unzip it in local folder.
+It will contain:
+	• disp_apache2.2.dll – This is my dispatcher module file, which we will plug in with web server.
+	• dispatcher.any – It is our dispatcher configuration file.
+	• author_dispatcher.any – Sample file for configuring our dispatcher.
+	• httpd.conf.disp2.conf – sample file to configure apache webserver.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Step:2 Now got to Apache installation directory C:\Program Files (x86)\Apache Software Foundation\Apache2.2\conf and open httpd.conf file.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Step:3 Open you httpd.conf.disp2 also copy below setting from this file to httpd.conf file&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;· Copy LoadModule dispatcher_module  modules/mod_dispatcher.so at (line 234) and paste anywhere in httpd.conf file, paste it at (line 130) where my load modules are ending.
+Note:This setting is used by apache webserver to load the dispatcher when next time Apache web server is started.
+· As my dispatcher module name is disp_apache2.2.dll. I will change modules/mod_dispatcher.so  in above line to modules/disp_apache2.2.dll.
+· Now copy the dispatcher level setting from httpd.conf.disp2.conf (Line 236 -284) as shown below and paste it to httpd.conf file after ending of &amp;lt;/IfModule&amp;gt; tag. I am pasting it at (line 146) where my if module is ending. This setting consist of:
+	• DispatcherConfig – location of the configuration file
+	• DispatcherLog– location of the dispatcher log file
+	• DispatcherPassError – to use your dispatcher for handling errors, if set to 1 then webserver will handle errors.
+	• DispatcherKeepAliveTimeout – Time interval for which your request should be kept alive.(in seconds, zero disables the keep-alive)
+	• SetHandler - to activate the dispatcher LoadModule.
+	• ModMimeUsePathInfo to configure behavior of mod_mime. The mod_mime module is used to assign content metadata to the content selected for an HTTP response. When On , the ModMimeUsePathInfo parameter specifies that mod_mime is to determine the content type based on the complete URL; this means that virtual resources will have metainformation applied based on their extension.
+	• DispatcherLogLevel : (0|1|2|3)
+		Log level for the log file:
+			• 0 - Errors
+			• 1 - Warnings
+			• 2 - Infos
+			• 3 - Debug
+			
+	• DispatcherNoServerHeader - This parameter is deprecated and no longer has any effect. If set to Off then the http header won't get processed, else it will be sent on to directly AEM server.
+	
+	• DispatcherDeclineRoot - If turned On then it will decline requests to the root &quot;/&quot; (like, http://localhost:4503/)  are not handled by the dispatcher; use mod_alias for the correct mapping. This doesn't work in Apache it works in IIS.
+	
+	• DispatcherUseProcessedURL - Defines whether to use pre-processed URLs for all further processing by Dispatcher: 
+	
+		§ 0 - use the original URL passed to the web server.
+		§ 1 - the dispatcher uses the URL already processed by the handlers that precede the dispatcher (i.e. mod_rewrite )
+	• DispatcherPassError - Defines how to support error codes for ErrorDocument handling:
+		§ 0 - Dispatcher spools all error responses to the client.
+		§ 1 - Dispatcher does not spool an error response to the client (where the status code is greater or equal than 400)
+		
+	• DispatcherNoCanonURL - Setting this parameter to On will pass the raw URL to the backend instead of the canonicalised one and will override the settings of DispatcherUseProcessedURL. The default value is Off.
+	
+	• SetHandler - SetHandler statement to the context of your configuration ( &amp;lt;Directory&amp;gt; , &amp;lt;Location&amp;gt; ) for the Dispatcher to handle the incoming requests.
+	```
+				&amp;lt;Directory /&amp;gt;  
+				&amp;lt;IfModule disp_apache2.c&amp;gt;  
+				SetHandler dispatcher-handler  
+				&amp;lt;/IfModule&amp;gt;  
+				  
+				Options FollowSymLinks  
+				AllowOverride None  
+				&amp;lt;/Directory&amp;gt;   ```
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Note : The filter rules in the Dispatcher configuration will always be evaluated against 
+the sanitised URL not the raw URL.&lt;/p&gt;
+
+&lt;p&gt;Dispatcher specific configuration entries should look like this:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&amp;lt;IfModule disp_apache2.c&amp;gt;
+
+DispatcherConfig conf/dispatcher.any
+DispatcherLog logs/dispatcher.log DispatcherLogLevel 3
+DispatcherNoServerHeader 0 DispatcherDeclineRoot 0
+DispatcherUseProcessedURL 0
+DispatcherPassError 0
+DispatcherKeepAliveTimeout 60
+
+&amp;lt;/IfModule&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Note: Do not paste this if module under any existing if module.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Step:4 Now copy the dispatcher handler from httpd.conf.disp2.conf (line 370) to httpd.conf file (line 238).&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;It will appear like below:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;	&amp;lt;Directory /&amp;gt;
+	    Options FollowSymLinks
+	    AllowOverride None
+	    Order deny,allow
+	    Deny from all
+	&amp;lt;/Directory&amp;gt;
+	&amp;lt;Directory /&amp;gt;
+	    &amp;lt;IfModule disp_apache2.c&amp;gt;
+	        ModMimeUsePathInfo On
+	        # enable dispatcher for ALL request. if this is too restrictive,
+	        # move it to another location
+	        SetHandler dispatcher-handler
+	    &amp;lt;/IfModule&amp;gt;
+	
+	    Options FollowSymLinks
+	    AllowOverride None
+	&amp;lt;/Directory&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;Step:5 Now copy this disp_apache2.2.dll  file from downloaded dispatcher and paste it under C:\Program Files (x86)\Apache Software Foundation\Apache2.2\modules.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Step:6 Now copy dispatcher.any file from downloaded dispatcher and paste it under C:\Program Files (x86)\Apache Software Foundation\Apache2.2\conf directory.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Step:7 Open dispatcher.any file and make few modification to make our dispatcher up and running.&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;· Update /renders section: Go to line 31 and update renders section to point our publish instance. Update the hostname(to 127.0.0.1 for local instance or remote IP) if required currently it is pointing to localhost and port to 4503 (i.e. publish instance port).
+· Update /filter section: Go to line 77 and instead of denying all request lets allow all request for testing. For Publish instance you should deny all request and allow specific , For author instance you should allow all and deny specific. ``` /filter
+		{
+		# Deny everything first and then allow specific entries
+		/0001 { /type &quot;allow&quot; /glob &quot;*&quot; } ```
+
+
+· Update /cache section: /docroot. It should exactly match my httpd.conf DocumentRoot path. Copy Document root path from httpd.conf file and paste it in dispatcher.any file at line 132.
+ C:/Program Files (x86)/Apache Software Foundation/Apache2.2/htdocs
+· Save all settings and Restart your Apache Web server in services.msc.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;test-dispatcher-installation&quot;&gt;Test Dispatcher installation:&lt;/h1&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;· Go to dispatcher.log and you can see Dispatcher initialized in log file. It means our dispatcher is up.
+
+• To check it is correctly plug in with our publish instance. Simply hit published page.
+http://localhost:81 it will redirect to the home page of the publish AEM site. Apache will serve the http://localhost:4503 via port 81 where Apache dispatcher is hosted.
+
+• Also check if the page browsed are cached in docroot folder defined in the dispatcher.any file. If not then go through below troubleshooting steps.
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h1 id=&quot;troubleshooting&quot;&gt;Troubleshooting:&lt;/h1&gt;
+
+&lt;p&gt;By default, requests that carry an authentication header are not cached. This is because authentication is not checked when a document is returned from the cache - so the document would be displayed for a user who does not have the necessary rights. However, in some setups it can be permissible to cache authenticated documents.&lt;/p&gt;
+
+&lt;p&gt;Workaround: There is a setting in dispatcher.any file /allowAuthorized “1” if set to “1” then authentication header of page will be ignored and pages will be cached without the auth header, which is not recommended setting for prod dispatcher configuration.&lt;/p&gt;</content><author><name>Ravi Gupta</name></author><category term="AEM" /><summary type="html">AEM Dispatcher installation:</summary></entry><entry><title type="html">Welcome to devlopr !</title><link href="/jekyll/2019/05/22/welcome-to-jekyll/" rel="alternate" type="text/html" title="Welcome to devlopr !" /><published>2019-05-22T09:05:23+00:00</published><updated>2019-05-22T09:05:23+00:00</updated><id>/jekyll/2019/05/22/welcome-to-jekyll</id><content type="html" xml:base="/jekyll/2019/05/22/welcome-to-jekyll/">&lt;p&gt;You’ll find this post in your &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run &lt;code class=&quot;highlighter-rouge&quot;&gt;jekyll serve&lt;/code&gt;, which launches a web server and auto-regenerates your site when a file is updated.&lt;/p&gt;
+
+&lt;p&gt;To add new posts, simply add a file in the &lt;code class=&quot;highlighter-rouge&quot;&gt;_posts&lt;/code&gt; directory that follows the convention &lt;code class=&quot;highlighter-rouge&quot;&gt;YYYY-MM-DD-name-of-post.ext&lt;/code&gt; and includes the necessary front matter. Take a look at the source for this post to get an idea about how it works.&lt;/p&gt;
+
+&lt;p&gt;Jekyll also offers powerful support for code snippets:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;nb&quot;&gt;puts&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;Hi, &lt;/span&gt;&lt;span class=&quot;si&quot;&gt;#{&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;print_hi&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s1&quot;&gt;'Tom'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#=&amp;gt; prints 'Hi, Tom' to STDOUT.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Check out the &lt;a href=&quot;https://jekyllrb.com/docs/home&quot;&gt;Jekyll docs&lt;/a&gt; for more info on how to get the most out of Jekyll. File all bugs/feature requests at &lt;a href=&quot;https://github.com/jekyll/jekyll&quot;&gt;Jekyll’s GitHub repo&lt;/a&gt;. If you have questions, you can ask them on &lt;a href=&quot;https://talk.jekyllrb.com/&quot;&gt;Jekyll Talk&lt;/a&gt;.&lt;/p&gt;</content><author><name>John Doe</name></author><category term="jekyll" /><summary type="html">You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated.</summary></entry><entry><title type="html">Using Siteleaf CMS with devlopr-jekyll Blog</title><link href="/guides/2019/05/22/using-siteleaf/" rel="alternate" type="text/html" title="Using Siteleaf CMS with devlopr-jekyll Blog" /><published>2019-05-22T09:05:23+00:00</published><updated>2019-05-22T09:05:23+00:00</updated><id>/guides/2019/05/22/using-siteleaf</id><content type="html" xml:base="/guides/2019/05/22/using-siteleaf/">&lt;p&gt;Hey There, Today we will see on how to unlock the superpowers of our devlopr-jekyll blog. We will be using Siteleaf CMS to modify content of our blog.&lt;/p&gt;
+
+&lt;p&gt;Note : If you have not created your blog yet. Create Your Blog , then comeback later&lt;/p&gt;
+
+&lt;p&gt;Login to &lt;a href=&quot;https://www.siteleaf.com/&quot;&gt;Siteleaf&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/siteleaf/1.png&quot; alt=&quot;Using Siteleaf &quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Select Connect with Github, connect existing repository:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/siteleaf/2.png&quot; alt=&quot;Using Siteleaf &quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Select the repository of your devlopr-jekyll blog:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/siteleaf/3.png&quot; alt=&quot;Using Siteleaf &quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Connect and Create Site:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/siteleaf/4.png&quot; alt=&quot;Using Siteleaf &quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;After successful import, You will be redirected to manage dashboard :&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/siteleaf/5.png&quot; alt=&quot;Using Siteleaf &quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;But before making any changes to our blog, we need to change our current Siteleaf membership plan to Free Plan (For Developers)&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/siteleaf/6.png&quot; alt=&quot;Using Siteleaf &quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Select Free Plan :&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/siteleaf/8.png&quot; alt=&quot;Using Siteleaf &quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Congrats ! Your New Admin Panel for your devlopr-jekyll blog is ready to make any changes to your blog :D&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/siteleaf/9.png&quot; alt=&quot;Using Siteleaf &quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;</content><author><name>Ravi Gupta</name></author><category term="guides" /><summary type="html">Hey There, Today we will see on how to unlock the superpowers of our devlopr-jekyll blog. We will be using Siteleaf CMS to modify content of our blog.</summary></entry><entry><title type="html">How to deploy devlopr-jekyll Blog using Github Pages and Travis</title><link href="/guides/2019/05/21/deploy-blog-using-devlopr-jekyll-and-github-pages/" rel="alternate" type="text/html" title="How to deploy devlopr-jekyll Blog using Github Pages and Travis" /><published>2019-05-21T09:05:23+00:00</published><updated>2019-05-21T09:05:23+00:00</updated><id>/guides/2019/05/21/deploy-blog-using-devlopr-jekyll-and-github-pages</id><content type="html" xml:base="/guides/2019/05/21/deploy-blog-using-devlopr-jekyll-and-github-pages/">&lt;p&gt;This guide assumes that you already have created your blog and tested locally. If not please follow this tutorial : &lt;a href=&quot;https://devlopr.netlify.com/guides/2017/11/19/build-a-blog-using-devlopr-jekyll&quot;&gt;Create a Blog using devlopr jekyll&lt;/a&gt;. Then come back and proceed with the deployment process.&lt;/p&gt;
+
+&lt;p&gt;In this Guide, we are using Github Pages and Travis CI for deploying our blog. Sometimes Github Pages does not support external third party plugins. In that case we deploy our blog using Travis CI, it automatically builds our website and pushes the static files of the site to a deployment branch. Which then Github Pages uses to render the site. Hope you get it :P !&lt;/p&gt;
+
+&lt;p&gt;We might need to instruct Travis CI to follow deployment instructions. Copy the below content in &lt;code class=&quot;highlighter-rouge&quot;&gt;.travis.yml&lt;/code&gt; file:&lt;/p&gt;
+
+&lt;div class=&quot;language-yml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;na&quot;&gt;language&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;ruby&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;cache&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;bundler&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Travis will build the site from gh-pages branch&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# and deploy the content to master branch&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# use gh-pages branch to serve for github pages&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# master branch will be used for deployment&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;branches&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;only&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;gh-pages&lt;/span&gt;
+&lt;span class=&quot;na&quot;&gt;script&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;pi&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;JEKYLL_ENV=production bundle exec jekyll build --destination site&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# You need to generate a Personal Access Token&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# https://github.com/settings/tokens&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Add this token in environment variable GITHUB_TOKEN in Travis CI repo settings&lt;/span&gt;
+
+&lt;span class=&quot;na&quot;&gt;deploy&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;provider&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;pages&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;local-dir&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;./site&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;target-branch&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;master&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;email&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;deploy@travis-ci.org&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;Deployment Bot&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;skip-cleanup&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;github-token&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;$GITHUB_TOKEN&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;keep-history&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;
+  &lt;span class=&quot;na&quot;&gt;on&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;na&quot;&gt;branch&lt;/span&gt;&lt;span class=&quot;pi&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;gh-pages&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# Generate your secure token with the travis gem:&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# get Github token from your Travis CI profile page&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;gem install travis&lt;/span&gt;
+  &lt;span class=&quot;s&quot;&gt;travis encrypt 'GIT_NAME=&quot;YOUR_USERNAME&quot; GIT_EMAIL=&quot;YOUR_EMAIL&quot; GH_TOKEN=YOUR_TOKEN' --add env.global --com&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;# env:&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#   global:&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#     secure: Example&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;All we are doing is telling Travis to pick up files from our &lt;strong&gt;gh-pages&lt;/strong&gt; branch and push the build files to &lt;strong&gt;master&lt;/strong&gt; branch.&lt;/p&gt;
+
+&lt;h5 id=&quot;generate-a-new-github-personal-access-token&quot;&gt;Generate a New Github Personal Access Token&lt;/h5&gt;
+
+&lt;p&gt;We need this token as a Environment Variable in Travis. For Travis can automatically login as you, and finish its job of building your site and pushing it to your repo’s master branch.&lt;/p&gt;
+
+&lt;p&gt;Go to &lt;a href=&quot;https://github.com/settings/tokens&quot;&gt;Github Generate a New Token&lt;/a&gt; Page.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/d1.png&quot; alt=&quot;deploy using travis&quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Create a new Access Token&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/d2.png&quot; alt=&quot;deploy using travis&quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;configure-travis&quot;&gt;Configure Travis&lt;/h5&gt;
+
+&lt;p&gt;Go to &lt;a href=&quot;https://travis.org&quot;&gt;Travis&lt;/a&gt; and Toggle the repository access to use Travis&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/d3.png&quot; alt=&quot;deploy using travis&quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Go to the repository settings page and Add Environment Variable ‘GITHUB_TOKEN’
+&lt;img src=&quot;/assets/img/posts/d4.png&quot; alt=&quot;deploy using travis&quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;h5 id=&quot;push-your-changes-to-github&quot;&gt;Push your changes to Github&lt;/h5&gt;
+
+&lt;p&gt;Commit your local changes in gh-pages branch&lt;/p&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;git add .&lt;/code&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;git commit -m &quot;added new post&quot;&lt;/code&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;git push origin gh-pages&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;After push, Travis will automatically run a build process and deploy your blog.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/d5.png&quot; alt=&quot;deploy using travis&quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;You can visit your site at https://yourusername.github.io&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/img/posts/d6.png&quot; alt=&quot;deploy using travis&quot; class=&quot;img-fluid&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Done ! Enjoy your brand new devlopr-jekyll blog. You can visit the site at https://yourusername.github.io&lt;/p&gt;</content><author><name>Ravi Gupta</name></author><category term="[&quot;guides&quot;]" /><summary type="html">This guide assumes that you already have created your blog and tested locally. If not please follow this tutorial : Create a Blog using devlopr jekyll. Then come back and proceed with the deployment process.</summary></entry></feed>

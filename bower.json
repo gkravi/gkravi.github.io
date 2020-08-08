@@ -1,0 +1,10 @@
+{
+  "name": "Ravi Gupta",
+  "homepage": "https://github.com/gkravi/gkravi.github.io",
+  "authors": ["ravigupta <ravigupta020287@gmail.com>"],
+  "description": "A Jekyll Theme Built For Developers",
+  "main": "",
+  "keywords": ["jekyll-theme", "jekyll", "gallery"],
+  "license": "MIT",
+  "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"]
+}
